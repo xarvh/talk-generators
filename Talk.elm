@@ -25,26 +25,28 @@ main =
             How do we use this to generate a complex type?
             """
 
-        , md
-            """
-            ```
-            generateSample seed0 =
-                let
-                    (seed1, age) =
-                        Random.step (Random.int 1 1000) seed0
+        , mdFragments
+            [ """
+                ```
+                generateSample seed0 =
+                    let
+                        (seed1, age) =
+                            Random.step (Random.int 1 1000) seed0
 
-                    (seed2, latitude) =
-                        Random.step (Random.float -90 +90) seed1
+                        (seed2, latitude) =
+                            Random.step (Random.float -90 +90) seed1
 
-                    (seed3, longitude) =
-                        Random.step (Random.float -180 +180) seed2
+                        (seed3, longitude) =
+                            Random.step (Random.float -180 +180) seed2
 
-                    randomSample =
-                        Sample age latitude longitude
-                in
-                    (randomSample, seed3)
-            ```
-            """
+                        randomSample =
+                            Sample age latitude longitude
+                    in
+                        (randomSample, seed3)
+                ```
+              """
+            , "This is ugly! -_-"
+            ]
 
         , md
             """
@@ -164,6 +166,17 @@ main =
               """
             ]
 
+        , md
+            """
+            Challenge
+            ---------
+
+            Implement
+            ```
+                combine : List (Random.Generator a) -> Random.Generator (List a)
+            ```
+            """
+
         , mdFragments
             [ "This is the same pattern used for:"
             , " * Generators (random or otherwise)"
@@ -182,45 +195,27 @@ main =
             """
                One last problem remaining:
 
-               How the hell do I initialise that seed?
+               How do I initialise that seed?
+            """
+
+        , mdFragments
+            [ "`Html.App.programWithFlags`"
+            , "`Elm.Main.fullscreen(Date.now())`"
+            , """
+                ```
+                   init : Int -> ( Model, Cmd Msg )
+                   init dateNow =
+                       let
+                           seed = Random.initialSeed dateNow
+                       ...
+                ```
+                """
+            ]
+
+        , md
+            """
+
+               @xarvh
+
             """
         ]
-
-{-
-
-   $
-       ```
-       Html.App.programWithFlags
-           { init = init
-           , update = update
-           , subscriptions = subscriptions
-           , view = view
-           }
-       ```
-
-       ```
-           <script type="text/javascript">Elm.Main.fullscreen(Date.now())</script>
-       ```
-
-
-   $
-       ```
-       init : Int -> ( Model, Cmd Msg )
-       init dateNow =
-           let
-               seed = Random.initialSeed dateNow
-           in
-               ( makeModel seed, Cmd.none )
-       ```
-
-
-   $
-       lexical-name-generator
-
-
-   $
-       @xarvh
-
-
-
--}

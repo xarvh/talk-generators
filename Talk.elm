@@ -1,17 +1,96 @@
+module Main exposing (..)
+
 import Slides exposing (..)
+import Slides.SlideAnimation as SA
+import Css exposing (..)
+import Css.Elements exposing (..)
+
+
+verticalDeck : SA.Animator
+verticalDeck status =
+    Css.asPairs <|
+        case status of
+            SA.Still ->
+                [ Css.position Css.absolute
+                ]
+
+            SA.Moving direction order completion ->
+                case order of
+                    SA.LaterSlide ->
+                        [ Css.position Css.absolute
+                        , Css.property "z-index" "1"
+                        ]
+
+                    SA.EarlierSlide ->
+                        [ Css.position Css.absolute
+                        , Css.transform <| Css.translate2 zero (pct (completion * 100))
+                        , Css.property "z-index" "2"
+                        ]
+
+
+font =
+    (px 20)
+
+
+whiteOnBlack : List Css.Snippet
+whiteOnBlack =
+    [ body
+        [ padding zero
+        , margin zero
+        , height (pct 100)
+        , backgroundColor (rgb 0 0 0)
+        , color (hex "fafafb")
+        , fontFamilies [ "Palatino Linotype" ]
+        , fontSize font
+        , fontWeight (num 400)
+        ]
+    , h1
+        [ fontWeight (num 400)
+        , fontSize (px 38)
+        ]
+    , section
+        [ height (px 700)
+        , width (pct 100)
+        , backgroundColor (rgb 0 0 0)
+        , property "background-position" "center"
+        , property "background-size" "cover"
+        , displayFlex
+        , property "justify-content" "center"
+        , alignItems center
+        ]
+    , (.) "slide-content"
+        [ margin2 zero (px 90)
+        ]
+    , code
+        [ textAlign left
+        , fontSize font
+        , padding (px 12)
+        ]
+    , pre
+        [ padding (px 20)
+        , fontSize font
+        ]
+    , a
+        [ textDecoration none
+        , display block
+        , color (hex "fafafb")
+        ]
+    ]
 
 
 main =
     Slides.app
-        slidesDefaultOptions
+        { slidesDefaultOptions
+            | style = whiteOnBlack
+            , slideAnimator = verticalDeck
+        }
         [ md
             "# Using (random) generators"
-
         , md
             """
             A generator is something that (duh!) generates values:
 
-            ```
+            ```elm
             generator =
                 Random.int 1 10
 
@@ -19,12 +98,10 @@ main =
                 Random.step generator oldSeed
             ```
             """
-
         , md
             """
             How do we use this to generate a complex type?
             """
-
         , mdFragments
             [ """
                 ```
@@ -47,23 +124,19 @@ main =
               """
             , "This is ugly! -_-"
             ]
-
         , md
             """
             We see at once a problem: having to lug around that seed
             is a pain in the ass!
             """
-
         , mdFragments
             [ "Coming from imperative languages, we are used to compose *values*."
             , "-> But in a functional language, we compose *functions*."
             ]
-
         , md
             """
             # A different way of thinking
             """
-
         , mdFragments
             [ """
                 ```
@@ -82,8 +155,8 @@ main =
                 `(Maybe.map toString) : Maybe Int -> Maybe String`
               """
             , "(This is also true for pretty much every type with a `map`)"
+            , "http://adit.io/posts/2013-04-17-functors,_applicatives,_and_monads_in_pictures.html"
             ]
-
         , mdFragments
             [ """
                ```
@@ -100,17 +173,14 @@ main =
                ```
               """
             ]
-
         , md
             """
            `map` allows us to work with the value without having it!
             """
-
         , md
             """
             How can we use this to generate more complex stuff?
             """
-
         , md
             """
                ```
@@ -122,7 +192,6 @@ main =
                        (Random.float -180 +180)
                ```
             """
-
         , mdFragments
             [ """
                ```
@@ -138,7 +207,6 @@ main =
             , "-> no dangerous fumbling around with seeds"
             , "-> no clutter"
             ]
-
         , mdFragments
             [ "What if a child generator needs random parameters?"
             , """
@@ -154,29 +222,31 @@ main =
                ```
               """
             ]
-
         , mdFragments
             [ "We can do pretty much everything by combining `map` and `andThen`"
             , """
                 ```
                 map2 mapper genA genB =
-                    genA `andThen` \a ->
+                    genA `andThen` \x07 ->
                         map (mapper a) genB
                 ```
               """
             ]
-
         , md
             """
             Challenge
             ---------
 
-            Implement
+            1. Implement
+            ```
+                constant : a -> Generator a
+            ```
+
+            1. Implement
             ```
                 combine : List (Random.Generator a) -> Random.Generator (List a)
             ```
             """
-
         , mdFragments
             [ "This is the same pattern used for:"
             , " * Generators (random or otherwise)"
@@ -190,14 +260,12 @@ main =
                        Random.step randomThingGenerator oldSeed
                ```
             """
-
         , md
             """
                One last problem remaining:
 
                How do I initialise that seed?
             """
-
         , mdFragments
             [ "`Html.App.programWithFlags`"
             , "`Elm.Main.fullscreen(Date.now())`"
@@ -211,7 +279,6 @@ main =
                 ```
                 """
             ]
-
         , md
             """
 

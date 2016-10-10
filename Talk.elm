@@ -2,8 +2,13 @@ module Main exposing (..)
 
 import Slides exposing (..)
 import Slides.SlideAnimation as SA
+import Slides.FragmentAnimation as FA
 import Css exposing (..)
 import Css.Elements exposing (..)
+
+
+blur completion =
+    "blur(" ++ (toString <| round <| (1 - completion) * 10) ++ "px)"
 
 
 verticalDeck : SA.Animator
@@ -19,7 +24,8 @@ verticalDeck status =
                     SA.LaterSlide ->
                         [ Css.position Css.absolute
                         , Css.property "z-index" "1"
-                        , Css.property "filter" <| "blur(" ++ (toString <| round <| (1 - completion) * 10) ++ "px)"
+                        , Css.property "filter" (blur completion)
+                        , Css.property "-webkit-filter" (blur completion)
                         ]
 
                     SA.EarlierSlide ->
@@ -27,6 +33,21 @@ verticalDeck status =
                         , Css.transform <| Css.translate2 zero (pct (completion * 100))
                         , Css.property "z-index" "2"
                         ]
+
+
+
+betterFade : FA.Animator
+betterFade completion =
+    Css.asPairs
+        [ Css.opacity (Css.num completion)
+        , Css.property "filter" (blur completion)
+        , Css.property "-webkit-filter" (blur completion)
+        ]
+
+
+
+
+
 
 
 font =
@@ -84,6 +105,7 @@ main =
         { slidesDefaultOptions
             | style = whiteOnBlack
             , slideAnimator = verticalDeck
+            , fragmentAnimator = betterFade
 --             , animationDuration = 3000
         }
         [ md

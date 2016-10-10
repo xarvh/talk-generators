@@ -19,6 +19,7 @@ verticalDeck status =
                     SA.LaterSlide ->
                         [ Css.position Css.absolute
                         , Css.property "z-index" "1"
+                        , Css.property "filter" <| "blur(" ++ (toString <| round <| (1 - completion) * 10) ++ "px)"
                         ]
 
                     SA.EarlierSlide ->
@@ -83,6 +84,7 @@ main =
         { slidesDefaultOptions
             | style = whiteOnBlack
             , slideAnimator = verticalDeck
+--             , animationDuration = 3000
         }
         [ md
             "# Using (random) generators"

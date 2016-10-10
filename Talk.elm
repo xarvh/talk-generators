@@ -53,16 +53,21 @@ betterFade completion =
 font =
     (px 20)
 
+bgColor =
+    (rgb 255 255 255)
 
-whiteOnBlack : List Css.Snippet
-whiteOnBlack =
+txtColor =
+    (hex "60B5CC")
+
+elmBlueOnWhite : List Css.Snippet
+elmBlueOnWhite =
     [ body
         [ padding zero
         , margin zero
         , height (pct 100)
-        , backgroundColor (rgb 0 0 0)
-        , color (hex "fafafb")
-        , fontFamilies [ "Palatino Linotype" ]
+        , backgroundColor bgColor
+        , color txtColor
+        , fontFamilies [ "calibri", "sans-serif" ]
         , fontSize font
         , fontWeight (num 400)
         ]
@@ -73,7 +78,7 @@ whiteOnBlack =
     , section
         [ height (px 700)
         , width (pct 100)
-        , backgroundColor (rgb 0 0 0)
+        , backgroundColor bgColor
         , property "background-position" "center"
         , property "background-size" "cover"
         , displayFlex
@@ -95,7 +100,7 @@ whiteOnBlack =
     , a
         [ textDecoration none
         , display block
-        , color (hex "fafafb")
+        , color txtColor
         ]
     ]
 
@@ -103,18 +108,20 @@ whiteOnBlack =
 main =
     Slides.app
         { slidesDefaultOptions
-            | style = whiteOnBlack
+            | style = elmBlueOnWhite
             , slideAnimator = verticalDeck
             , fragmentAnimator = betterFade
 --             , animationDuration = 3000
         }
         [ md
             "# Using (random) generators"
+
         , md
             """
             A generator is something that (duh!) generates values:
 
             ```elm
+
             generator =
                 Random.int 1 10
 
@@ -155,7 +162,7 @@ main =
             """
         , mdFragments
             [ "Coming from imperative languages, we are used to compose *values*."
-            , "-> But in a functional language, we compose *functions*."
+            , "➡ But in a functional language, we compose *functions*."
             ]
         , md
             """
@@ -164,6 +171,7 @@ main =
         , mdFragments
             [ """
                 ```
+
                 List Int
                 Maybe Int
                 ```
@@ -184,6 +192,7 @@ main =
         , mdFragments
             [ """
                ```
+
                List Int
                Maybe Int
                Generator Int
@@ -191,6 +200,7 @@ main =
               """
             , """
                 ```
+
                (List.map toString) : List Int -> List String
                (Maybe.map toString) : Maybe Int -> Maybe String
                (Random.map toString) : Generator Int -> Generator String
@@ -208,6 +218,8 @@ main =
         , md
             """
                ```
+
+               sampleGenerator : Generator Sample
                sampleGenerator =
                    Random.map3
                        \\age latitude longitude -> Sample age latitude longitude
@@ -219,6 +231,7 @@ main =
         , mdFragments
             [ """
                ```
+
                sampleGenerator : Generator Sample
                sampleGenerator =
                    Random.map3
@@ -228,13 +241,14 @@ main =
                        (Random.float -180 +180)
                ```
               """
-            , "-> no dangerous fumbling around with seeds"
-            , "-> no clutter"
+            , "➡ no dangerous fumbling around with seeds"
+            , "➡ no clutter"
             ]
         , mdFragments
             [ "What if a child generator needs random parameters?"
             , """
                ```
+
                sampleGenerator : Generator Sample
                sampleGenerator =
                    Random.bool `Random.andThen` \\isVeryOld - >
@@ -295,6 +309,7 @@ main =
             , "`Elm.Main.fullscreen(Date.now())`"
             , """
                 ```
+
                    init : Int -> ( Model, Cmd Msg )
                    init dateNow =
                        let

@@ -96,6 +96,7 @@ elmBlueOnWhite =
     , pre
         [ padding (px 20)
         , fontSize font
+        , backgroundColor (rgb 230 230 230)
         ]
     , a
         [ textDecoration none
@@ -121,7 +122,6 @@ main =
             A generator is something that (duh!) generates values:
 
             ```elm
-
             generator =
                 Random.int 1 10
 
@@ -135,7 +135,7 @@ main =
             """
         , mdFragments
             [ """
-                ```
+                ```elm
                 generateSample seed0 =
                     let
                         (seed1, age) =
@@ -170,7 +170,7 @@ main =
             """
         , mdFragments
             [ """
-                ```
+                ```elm
 
                 List Int
                 Maybe Int
@@ -182,16 +182,18 @@ main =
                 We can use `map` to manipulate that `Int`
               """
             , """
-                `(List.map toString) : List Int -> List String`
+                ```elm
 
-                `(Maybe.map toString) : Maybe Int -> Maybe String`
+                (List.map toString) : List Int -> List String
+                (Maybe.map toString) : Maybe Int -> Maybe String
+                ```
               """
             , "(This is also true for pretty much every type with a `map`)"
             , "http://adit.io/posts/2013-04-17-functors,_applicatives,_and_monads_in_pictures.html"
             ]
         , mdFragments
             [ """
-               ```
+               ```elm
 
                List Int
                Maybe Int
@@ -199,7 +201,7 @@ main =
                ```
               """
             , """
-                ```
+                ```elm
 
                (List.map toString) : List Int -> List String
                (Maybe.map toString) : Maybe Int -> Maybe String
@@ -217,7 +219,7 @@ main =
             """
         , md
             """
-               ```
+               ```elm
 
                sampleGenerator : Generator Sample
                sampleGenerator =
@@ -230,7 +232,7 @@ main =
             """
         , mdFragments
             [ """
-               ```
+               ```elm
 
                sampleGenerator : Generator Sample
                sampleGenerator =
@@ -241,13 +243,13 @@ main =
                        (Random.float -180 +180)
                ```
               """
-            , "➡ no dangerous fumbling around with seeds"
-            , "➡ no clutter"
+            , "➡ No dangerous fumbling around with seeds"
+            , "➡ No clutter"
             ]
         , mdFragments
             [ "What if a child generator needs random parameters?"
             , """
-               ```
+               ```elm
 
                sampleGenerator : Generator Sample
                sampleGenerator =
@@ -263,7 +265,7 @@ main =
         , mdFragments
             [ "We can do pretty much everything by combining `map` and `andThen`"
             , """
-                ```
+                ```elm
                 map2 mapper genA genB =
                     genA `andThen` \x07 ->
                         map (mapper a) genB
@@ -276,12 +278,12 @@ main =
             ---------
 
             1. Implement
-            ```
+            ```elm
                 constant : a -> Generator a
             ```
 
             1. Implement
-            ```
+            ```elm
                 combine : List (Random.Generator a) -> Random.Generator (List a)
             ```
             """
@@ -293,7 +295,7 @@ main =
         , md
             """
                See Generators as something more abstract:
-               ```
+               ```elm
                    (aRandomThing, newSeed) =
                        Random.step randomThingGenerator oldSeed
                ```
@@ -308,7 +310,7 @@ main =
             [ "`Html.App.programWithFlags`"
             , "`Elm.Main.fullscreen(Date.now())`"
             , """
-                ```
+                ```elm
 
                    init : Int -> ( Model, Cmd Msg )
                    init dateNow =

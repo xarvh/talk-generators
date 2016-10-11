@@ -51,13 +51,16 @@ betterFade completion =
 
 
 font =
-    (px 20)
+    px 20
 
 bgColor =
-    (rgb 255 255 255)
+    rgb 255 255 255
+
+codeBgColor =
+    rgb 230 230 230
 
 txtColor =
-    (hex "60B5CC")
+    hex "60B5CC"
 
 elmBlueOnWhite : List Css.Snippet
 elmBlueOnWhite =
@@ -91,12 +94,12 @@ elmBlueOnWhite =
     , code
         [ textAlign left
         , fontSize font
-        , padding (px 12)
+        , backgroundColor codeBgColor
         ]
     , pre
         [ padding (px 20)
         , fontSize font
-        , backgroundColor (rgb 230 230 230)
+        , backgroundColor codeBgColor
         ]
     , a
         [ textDecoration none
@@ -133,36 +136,45 @@ main =
             ```
             """
 
-        , md
-            """
-            # Part 1: Getting rid of side effects
-            """
-
+        -- TODO: make examles more clear!
         , mdFragments
-            [ "`Html.App.programWithFlags`"
-            , "`Elm.Main.fullscreen(Date.now())`"
+            [ """
+              Problem 1: how do we get an initial seed as soon as we start?
+              """
+
+            , """
+              ```elm
+              Html.App.programWithFlags
+              ```
+              """
+
+            , """
+              ```javascript
+              Elm.Main.fullscreen(Date.now())
+              ```
+              """
+
             , """
                 ```elm
-
-                   init : Int -> ( Model, Cmd Msg )
-                   init dateNow =
-                       let
-                           seed = Random.initialSeed dateNow
-                       ...
+                init : Int -> ( Model, Cmd Msg )
+                init dateNow =
+                    let
+                        seed = Random.initialSeed dateNow
+                    ...
                 ```
-                """
+              """
             ]
 
 
-        , md
-            """
-            # Part 2: randomizing complex stuff
-            """
+        , mdFragments
+            [ """
+              Problem 2: how do I generate complex stuff?
+              """
 
-        , md
-            """
+            , """
                 ```elm
-                type Topping = Onion | Mushroom | Sausage
+                type Topping =
+                    Onion | Mushroom | Sausage
 
                 type alias Pizza =
                     { cheeseCount : Int
@@ -170,7 +182,8 @@ main =
                     , extraTopping : Maybe Topping
                     }
                 ```
-            """
+              """
+            ]
 
         , md
             """
@@ -190,7 +203,9 @@ main =
                             Random.step Random.bool seed3
 
                         extraTopping =
-                            if hasExtraTopping then Just (int2topping extraToppingIndex) else Nothing
+                            if hasExtraTopping
+                            then Just (int2topping extraToppingIndex)
+                            else Nothing
 
                         randomPizza =
                             Pizza cheeseCount (int2topping mainToppingIndex) extraTopping
@@ -201,7 +216,7 @@ main =
 
         , mdFragments
             [ " * I made a mistake, did you see it?"
-            , " * lugging around the `seedX` value is a pain!"
+            , " * Lugging around the `seedX` value is a pain!"
             , " * Clutter: difficult to understand the function"
             , " * I generate `extraToppingIndex` even when I don't use it"
             ]
@@ -239,6 +254,8 @@ main =
               """
             ]
 
+        -- TODO img
+        -- TODO code doesn't fit slide
         , mdFragments
             [ """
                 What if our function has more than 1 argument?
@@ -320,21 +337,16 @@ main =
             Challenge
             ---------
 
-            1. Implement
-            ```elm
-                constant : a -> Generator a
-            ```
+            1. Implement `constant : a -> Generator a`
 
-            1. Implement
-            ```elm
-                combine : List (Random.Generator a) -> Random.Generator (List a)
-            ```
+            1. Implement `map1..3` using only `Random.map` and `Random.andThen`
+
+            1. Implement `combine : List (Generator a) -> Generator (List a)`
             """
 
         , md
             """
-
-               @xarvh
-
+            @xarvh
+            ------
             """
         ]

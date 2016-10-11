@@ -133,145 +133,124 @@ main =
             """
             How do we use this to generate a complex type?
             """
-        , mdFragments
-            [ """
-                ```elm
-                generateSample seed0 =
-                    let
-                        (seed1, age) =
-                            Random.step (Random.int 1 1000) seed0
 
-                        (seed2, latitude) =
-                            Random.step (Random.float -90 +90) seed1
 
-                        (seed3, longitude) =
-                            Random.step (Random.float -180 +180) seed2
 
-                        randomSample =
-                            Sample age latitude longitude
-                    in
-                        (randomSample, seed3)
-                ```
-              """
-            , "This is ugly! -_-"
-            ]
         , md
             """
-            We see at once a problem: having to lug around that seed
-            is a pain in the ass!
+                ```elm
+                type Topping = Onion | Mushroom | Sausage
+
+                type alias Pizza =
+                    { cheeseCount : Int
+                    , mainTopping : Topping
+                    , extraTopping : Maybe Topping
+                    }
+                ```
             """
+
+        , md
+            """
+                ```elm
+                generatePizza seed0 =
+                    let
+                        (seed1, cheeseCount) =
+                            Random.step (Random.int 0 4) seed0
+
+                        (seed2, mainToppingIndex) =
+                            Random.step (Random.int 0 2) seed1
+
+                        (seed3, extraToppingIndex) =
+                            Random.step (Random.int 0 2) seed2
+
+                        (seed4, hasExtraTopping) =
+                            Random.step Random.bool seed3
+
+                        extraTopping =
+                            if hasExtraTopping then Just (int2topping extraToppingIndex) else Nothing
+
+                        randomPizza =
+                            Pizza cheeseCount (int2topping mainToppingIndex) extraTopping
+                    in
+                        (randomPizza, seed3)
+                ```
+              """
+
+        , mdFragments
+            [ " * I made a mistake, did you see it?"
+            , " * lugging around the `seedX` value is a pain!"
+            , " * Clutter: difficult to understand the function"
+            , " * I generate `extraToppingIndex` even when I don't use it"
+            ]
+
         , mdFragments
             [ "Coming from imperative languages, we are used to compose *values*."
             , "➡ But in a functional language, we compose *functions*."
             ]
+
         , md
             """
             # A different way of thinking
             """
+
+        , md
+            """
+            [img   f : Star -> Triangle]
+
+            example: `toFloat : Int -> Float`
+            """
+
         , mdFragments
             [ """
-                ```elm
+                [img   (map f) : container Star -> container Triangle]
 
-                List Int
-                Maybe Int
+                ```elm
+                (List.map toFloat) : List Int -> List Float
+                (Maybe.map toFloat) : Maybe Int -> Maybe Float
                 ```
               """
             , """
-                They are "containers" of `Int`
-
-                We can use `map` to manipulate that `Int`
-              """
-            , """
-                ```elm
-
-                (List.map toString) : List Int -> List String
-                (Maybe.map toString) : Maybe Int -> Maybe String
                 ```
-              """
-            , "(This is also true for pretty much every type with a `map`)"
-            , "http://adit.io/posts/2013-04-17-functors,_applicatives,_and_monads_in_pictures.html"
-            ]
-        , mdFragments
-            [ """
-               ```elm
-
-               List Int
-               Maybe Int
-               Generator Int
-               ```
-              """
-            , """
-                ```elm
-
-               (List.map toString) : List Int -> List String
-               (Maybe.map toString) : Maybe Int -> Maybe String
-               (Random.map toString) : Generator Int -> Generator String
-               ```
-              """
-            ]
-        , md
-            """
-           `map` allows us to work with the value without having it!
-            """
-        , md
-            """
-            How can we use this to generate more complex stuff?
-            """
-        , md
-            """
-               ```elm
-
-               sampleGenerator : Generator Sample
-               sampleGenerator =
-                   Random.map3
-                       \\age latitude longitude -> Sample age latitude longitude
-                       (Random.int 1 1000)
-                       (Random.float -90 +90)
-                       (Random.float -180 +180)
-               ```
-            """
-        , mdFragments
-            [ """
-               ```elm
-
-               sampleGenerator : Generator Sample
-               sampleGenerator =
-                   Random.map3
-                       Sample
-                       (Random.int 1 1000)
-                       (Random.float -90 +90)
-                       (Random.float -180 +180)
-               ```
-              """
-            , "➡ No dangerous fumbling around with seeds"
-            , "➡ No clutter"
-            ]
-        , mdFragments
-            [ "What if a child generator needs random parameters?"
-            , """
-               ```elm
-
-               sampleGenerator : Generator Sample
-               sampleGenerator =
-                   Random.bool `Random.andThen` \\isVeryOld - >
-                       Random.map3
-                           Sample
-                           (Random.int 1 (if isVeryOld then 1000000 else 1000)
-                           (Random.float -90 +90)
-                           (Random.float -180 +180)
-               ```
-              """
-            ]
-        , mdFragments
-            [ "We can do pretty much everything by combining `map` and `andThen`"
-            , """
-                ```elm
-                map2 mapper genA genB =
-                    genA `andThen` \x07 ->
-                        map (mapper a) genB
+                (Random.map toFloat) : Generator Int -> Generator Float
                 ```
               """
             ]
+
+        , mdFragments
+            [ """
+                What if our function has more than 1 argument?
+
+                [img g : Star -> Circle -> Square -> Triangle]
+
+                ```elm
+                (List.map3 Pizza) : List Int -> List Topping -> List (Maybe Topping) -> List Pizza
+                (Maybe.map3 Pizza) : Maybe Int -> Maybe Topping -> Maybe (Maybe Topping) -> Maybe Pizza
+                ```
+              """
+            , """
+                ```
+                (Random.map3 Pizza) : Generator Int -> Generator Topping -> Generator (Maybe Topping) -> Generator Pizza
+                ```
+              """
+            ]
+
+        , md
+            """
+                ```
+                pizzaGenerator : Random.Generator Pizza
+                pizzaGenerator =
+                    Random.map3
+                        \\cheeseCount mainTopping extraTopping -> Pizza cheeseCount mainTopping extraTopping
+                        (Random.int 0 4)
+                        toppingGenerator
+                        extraToppingGenerator
+                ```
+            """
+
+            -- TODO: mainTopping generator
+            -- TODO: extraToppingGenerator
+
+
         , md
             """
             Challenge
@@ -287,23 +266,12 @@ main =
                 combine : List (Random.Generator a) -> Random.Generator (List a)
             ```
             """
-        , mdFragments
-            [ "This is the same pattern used for:"
-            , " * Generators (random or otherwise)"
-            , " * Encoders, Decoders, Parsers"
-            ]
-        , md
-            """
-               See Generators as something more abstract:
-               ```elm
-                   (aRandomThing, newSeed) =
-                       Random.step randomThingGenerator oldSeed
-               ```
-            """
-        , md
-            """
-               One last problem remaining:
 
+
+
+        -- TODO: move at beginning
+        , md
+            """
                How do I initialise that seed?
             """
         , mdFragments

@@ -127,14 +127,37 @@ main =
 
             (aRandomIntegerValue, newSeed) =
                 Random.step generator oldSeed
+
+            cmd =
+                Random.generate MsgRandomInt generator
             ```
             """
+
         , md
             """
-            How do we use this to generate a complex type?
+            # Part 1: Getting rid of side effects
             """
 
+        , mdFragments
+            [ "`Html.App.programWithFlags`"
+            , "`Elm.Main.fullscreen(Date.now())`"
+            , """
+                ```elm
 
+                   init : Int -> ( Model, Cmd Msg )
+                   init dateNow =
+                       let
+                           seed = Random.initialSeed dateNow
+                       ...
+                ```
+                """
+            ]
+
+
+        , md
+            """
+            # Part 2: randomizing complex stuff
+            """
 
         , md
             """
@@ -210,7 +233,7 @@ main =
                 ```
               """
             , """
-                ```
+                ```elm
                 (Random.map toFloat) : Generator Int -> Generator Float
                 ```
               """
@@ -228,7 +251,7 @@ main =
                 ```
               """
             , """
-                ```
+                ```elm
                 (Random.map3 Pizza) : Generator Int -> Generator Topping -> Generator (Maybe Topping) -> Generator Pizza
                 ```
               """
@@ -236,20 +259,61 @@ main =
 
         , md
             """
-                ```
+                ```elm
                 pizzaGenerator : Random.Generator Pizza
                 pizzaGenerator =
                     Random.map3
-                        \\cheeseCount mainTopping extraTopping -> Pizza cheeseCount mainTopping extraTopping
+                        Pizza
                         (Random.int 0 4)
                         toppingGenerator
                         extraToppingGenerator
                 ```
             """
 
-            -- TODO: mainTopping generator
-            -- TODO: extraToppingGenerator
+        , md
+            """
+                ```elm
+                pizzaJsonDecoder : Json.Decode.Decoder Pizza
+                pizzaJsonDecoder =
+                    Json.Decode.object3
+                        Pizza
+                        ("cheeseCount" := Json.Decode.int)
+                        ("mainTopping" := toppingDecoder)
+                        (Json.Decode.maybe ("extraTopping" := toppingDecoder))
+                ```
+            """
 
+        , md
+            """
+                ```elm
+                type Topping = Onion | Mushroom | Sausage
+
+                toppingGenerator : Random.Generator Topping
+                toppingGenerator =
+                    Random.map
+                        int2topping
+                        (Random.int 0 2)
+
+                int2topping index =
+                    case index of
+                        0 -> Onion
+                        1 -> Mushroom
+                        _ -> Sausage
+                ```
+
+            """
+
+        , md
+            """
+                ```elm
+                extraToppingGenerator : Random.Generator (Maybe Topping)
+                extraToppingGenerator =
+                    Random.bool `Random.andThen` \\hasTopping ->
+                        case hasTopping of
+                            False -> Random.constant Nothing
+                            True -> Random.map Just toppingGenerator
+                ```
+            """
 
         , md
             """
@@ -267,27 +331,6 @@ main =
             ```
             """
 
-
-
-        -- TODO: move at beginning
-        , md
-            """
-               How do I initialise that seed?
-            """
-        , mdFragments
-            [ "`Html.App.programWithFlags`"
-            , "`Elm.Main.fullscreen(Date.now())`"
-            , """
-                ```elm
-
-                   init : Int -> ( Model, Cmd Msg )
-                   init dateNow =
-                       let
-                           seed = Random.initialSeed dateNow
-                       ...
-                ```
-                """
-            ]
         , md
             """
 

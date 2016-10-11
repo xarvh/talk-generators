@@ -101,10 +101,8 @@ elmBlueOnWhite =
         , fontSize font
         , backgroundColor codeBgColor
         ]
-    , a
-        [ textDecoration none
-        , display block
-        , color txtColor
+    , img
+        [ width (pct 100)
         ]
     ]
 
@@ -136,7 +134,7 @@ main =
             ```
             """
 
-        -- TODO: make examles more clear!
+        -- TODO: make examples more clear!
         , mdFragments
             [ """
               Problem 1: how do we get an initial seed as soon as we start?
@@ -233,34 +231,66 @@ main =
 
         , md
             """
-            [img   f : Star -> Triangle]
+            ![function f](images/f.png)
 
-            example: `toFloat : Int -> Float`
+            ```
+            toFloat : Int -> Float
+
+            int2topping : Int -> Topping
+            ```
             """
 
         , mdFragments
             [ """
-                [img   (map f) : container Star -> container Triangle]
+                ![map f](images/mapf.png)
 
                 ```elm
                 (List.map toFloat) : List Int -> List Float
+
                 (Maybe.map toFloat) : Maybe Int -> Maybe Float
                 ```
               """
             , """
                 ```elm
                 (Random.map toFloat) : Generator Int -> Generator Float
+
+                (Random.map int2topping) : Generator Int -> Generator Topping
                 ```
               """
             ]
 
-        -- TODO img
+        , md
+            """
+                ```elm
+                type Topping = Onion | Mushroom | Sausage
+
+                int2topping : Int -> Topping
+                int2topping index =
+                    case index of
+                        0 -> Onion
+                        1 -> Mushroom
+                        _ -> Sausage
+
+                toppingGenerator : Random.Generator Topping
+                toppingGenerator =
+                    Random.map
+                        int2topping
+                        (Random.int 0 2)
+                ```
+
+            """
+
+        , md
+            """
+                What if our function has more than 1 argument?
+
+                ![pizza](images/pizza.png)
+            """
+
         -- TODO code doesn't fit slide
         , mdFragments
             [ """
-                What if our function has more than 1 argument?
-
-                [img g : Star -> Circle -> Square -> Triangle]
+                ![map3 Pizza](images/map3pizza.png)
 
                 ```elm
                 (List.map3 Pizza) : List Int -> List Topping -> List (Maybe Topping) -> List Pizza
@@ -276,6 +306,8 @@ main =
 
         , md
             """
+                Let's implement it!
+
                 ```elm
                 pizzaGenerator : Random.Generator Pizza
                 pizzaGenerator =
@@ -290,39 +322,6 @@ main =
         , md
             """
                 ```elm
-                pizzaJsonDecoder : Json.Decode.Decoder Pizza
-                pizzaJsonDecoder =
-                    Json.Decode.object3
-                        Pizza
-                        ("cheeseCount" := Json.Decode.int)
-                        ("mainTopping" := toppingDecoder)
-                        (Json.Decode.maybe ("extraTopping" := toppingDecoder))
-                ```
-            """
-
-        , md
-            """
-                ```elm
-                type Topping = Onion | Mushroom | Sausage
-
-                toppingGenerator : Random.Generator Topping
-                toppingGenerator =
-                    Random.map
-                        int2topping
-                        (Random.int 0 2)
-
-                int2topping index =
-                    case index of
-                        0 -> Onion
-                        1 -> Mushroom
-                        _ -> Sausage
-                ```
-
-            """
-
-        , md
-            """
-                ```elm
                 extraToppingGenerator : Random.Generator (Maybe Topping)
                 extraToppingGenerator =
                     Random.bool `Random.andThen` \\hasTopping ->
@@ -331,6 +330,23 @@ main =
                             True -> Random.map Just toppingGenerator
                 ```
             """
+
+        , mdFragments
+            [ """
+              *This way of composing functions is entirely general!*
+              """
+            , """
+                ```elm
+                pizzaJsonDecoder : Json.Decode.Decoder Pizza
+                pizzaJsonDecoder =
+                    Json.Decode.object3
+                        Pizza
+                        ("cheeseCount" := Json.Decode.int)
+                        ("mainTopping" := toppingDecoder)
+                        (Json.Decode.maybe ("extraTopping" := toppingDecoder))
+                ```
+              """
+            ]
 
         , md
             """
@@ -348,5 +364,7 @@ main =
             """
             @xarvh
             ------
+
+            https://github.com/xarvh/talk-generators
             """
         ]

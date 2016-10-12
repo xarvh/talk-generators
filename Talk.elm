@@ -118,21 +118,25 @@ main =
         [ md
             "# Using (random) generators"
 
-        , md
-            """
-            A generator is something that (duh!) generates values:
+        , mdFragments
+            [ """
+              A generator is something that (duh!) generates values:
 
-            ```elm
-            generator =
-                Random.int 1 10
+              ```elm
+              generator =
+                  Random.int 1 10
 
-            (aRandomIntegerValue, newSeed) =
-                Random.step generator oldSeed
+              (aRandomIntegerValue, newSeed) =
+                  Random.step generator oldSeed
 
-            cmd =
-                Random.generate MsgRandomInt generator
-            ```
-            """
+              cmd =
+                  Random.generate MsgRandomInt generator
+              ```
+              """
+            , """
+              To keep everything synchronous, I want to use `Random.step`!
+              """
+            ]
 
         -- TODO: make examples more clear!
         , mdFragments
@@ -267,7 +271,7 @@ main =
                 ```
               """
             , """
-                ```
+                ```elm
                 int2topping : Int -> Topping
                 int2topping index =
                     case index of
@@ -277,7 +281,7 @@ main =
                 ```
               """
             , """
-                ```
+                ```elm
                 toppingGenerator : Generator Topping
                 toppingGenerator =
                     Random.map

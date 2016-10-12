@@ -233,7 +233,7 @@ main =
             """
             ![function f](images/f.png)
 
-            ```
+            ```elm
             toFloat : Int -> Float
 
             int2topping : Int -> Topping
@@ -259,26 +259,33 @@ main =
               """
             ]
 
-        , md
-            """
+        , mdFragments
+            [ "Let's implement it!"
+            , """
                 ```elm
                 type Topping = Onion | Mushroom | Sausage
-
+                ```
+              """
+            , """
+                ```
                 int2topping : Int -> Topping
                 int2topping index =
                     case index of
                         0 -> Onion
                         1 -> Mushroom
                         _ -> Sausage
-
-                toppingGenerator : Random.Generator Topping
+                ```
+              """
+            , """
+                ```
+                toppingGenerator : Generator Topping
                 toppingGenerator =
                     Random.map
                         int2topping
                         (Random.int 0 2)
                 ```
-
-            """
+              """
+            ]
 
         , md
             """
@@ -287,29 +294,43 @@ main =
                 ![pizza](images/pizza.png)
             """
 
-        -- TODO code doesn't fit slide
+        , md
+            """
+            ![map3 Pizza](images/map3pizza.png)
+            """
+
         , mdFragments
             [ """
-                ![map3 Pizza](images/map3pizza.png)
-
                 ```elm
-                (List.map3 Pizza) : List Int -> List Topping -> List (Maybe Topping) -> List Pizza
-                (Maybe.map3 Pizza) : Maybe Int -> Maybe Topping -> Maybe (Maybe Topping) -> Maybe Pizza
+                (List.map3 Pizza) :
+                    List Int ->
+                    List Topping ->
+                    List (Maybe Topping) ->
+                    List Pizza
+
+                (Maybe.map3 Pizza) :
+                    Maybe Int ->
+                    Maybe Topping ->
+                    Maybe (Maybe Topping) ->
+                    Maybe Pizza
                 ```
               """
             , """
                 ```elm
-                (Random.map3 Pizza) : Generator Int -> Generator Topping -> Generator (Maybe Topping) -> Generator Pizza
+                (Random.map3 Pizza) :
+                    Generator Int ->
+                    Generator Topping ->
+                    Generator (Maybe Topping) ->
+                    Generator Pizza
                 ```
               """
             ]
 
-        , md
-            """
-                Let's implement it!
-
+        , mdFragments
+            [ "Let's implement it!"
+            , """
                 ```elm
-                pizzaGenerator : Random.Generator Pizza
+                pizzaGenerator : Generator Pizza
                 pizzaGenerator =
                     Random.map3
                         Pizza
@@ -317,25 +338,63 @@ main =
                         toppingGenerator
                         extraToppingGenerator
                 ```
-            """
+              """
+            , """
+              ➡ Very clear, very readable
+              """
+            , """
+              ➡ No messing with seeds
+              """
+            , """
+              What about `extraToppingGenerator`?
+              """
+            ]
 
-        , md
-            """
+
+        , mdFragments
+            [ """
+                Unlike `map`, `andThen` can manipulate the container itself:
+
+
+                ---> Monads apply a function that returns a wrapped value to a wrapped value
+
+                "once you know the result of the genertor A, THEN you use generator B"
+
+                resultOfRandomBool
+                        -> Nothing
+                        -> Just randomTopping
+
+
+
+
                 ```elm
-                extraToppingGenerator : Random.Generator (Maybe Topping)
+                extraToppingGenerator : Generator (Maybe Topping)
                 extraToppingGenerator =
                     Random.bool `Random.andThen` \\hasTopping ->
                         case hasTopping of
                             False -> Random.constant Nothing
                             True -> Random.map Just toppingGenerator
                 ```
-            """
+              """
+            ]
+
+
+
 
         , mdFragments
             [ """
-              *This way of composing functions is entirely general!*
-              """
-            , """
+                This way of composing functions is very general!
+
+                ```elm
+                pizzaGenerator : Generator Pizza
+                pizzaGenerator =
+                    Random.map3
+                        Pizza
+                        (Random.int 0 4)
+                        toppingGenerator
+                        extraToppingGenerator
+                ```
+
                 ```elm
                 pizzaJsonDecoder : Json.Decode.Decoder Pizza
                 pizzaJsonDecoder =
@@ -348,23 +407,22 @@ main =
               """
             ]
 
-        , md
-            """
-            Challenge
-            ---------
+        , mdFragments
+            [ """
+              @xarvh
+              ------
 
-            1. Implement `constant : a -> Generator a`
+              https://github.com/xarvh/talk-generators
+              """
+            , """
+              Challenge
+              ---------
 
-            1. Implement `map1..3` using only `Random.map` and `Random.andThen`
+              1. Implement `constant : a -> Generator a`
 
-            1. Implement `combine : List (Generator a) -> Generator (List a)`
-            """
+              1. Implement `map2` and `map3` using only `Random.map` and `Random.andThen`
 
-        , md
-            """
-            @xarvh
-            ------
-
-            https://github.com/xarvh/talk-generators
-            """
+              1. Implement `combine : List (Generator a) -> Generator (List a)`
+              """
+            ]
         ]

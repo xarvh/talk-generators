@@ -165,6 +165,7 @@ main =
                     ...
                 ```
               """
+            , "(This will probably change slightly in Elm 0.18)"
             ]
 
 
@@ -219,7 +220,7 @@ main =
         , mdFragments
             [ " * I made a mistake, did you see it?"
             , " * Lugging around the `seedX` value is a pain!"
-            , " * Clutter: difficult to understand the function"
+            , " * It is cluttered and difficult to read!"
             , " * I generate `extraToppingIndex` even when I don't use it"
             ]
 
@@ -357,32 +358,29 @@ main =
 
         , mdFragments
             [ """
-                Unlike `map`, `andThen` can manipulate the container itself:
-
-
-                ---> Monads apply a function that returns a wrapped value to a wrapped value
-
-                "once you know the result of the genertor A, THEN you use generator B"
-
+                ```elm
                 resultOfRandomBool
                         -> Nothing
                         -> Just randomTopping
-
-
-
-
+                ```
+              """
+            , """
                 ```elm
                 extraToppingGenerator : Generator (Maybe Topping)
                 extraToppingGenerator =
                     Random.bool `Random.andThen` \\hasTopping ->
                         case hasTopping of
-                            False -> Random.constant Nothing
+                            False -> Random.Extra.constant Nothing
                             True -> Random.map Just toppingGenerator
                 ```
               """
+            , """
+                _Once you know the result of the genertor A, THEN you use generator B_
+              """
+            , """
+                Unlike `map`, `andThen` can manipulate not only the value, but also the container!
+              """
             ]
-
-
 
 
         , mdFragments
@@ -422,11 +420,9 @@ main =
               Challenge
               ---------
 
-              1. Implement `constant : a -> Generator a`
-
               1. Implement `map2` and `map3` using only `Random.map` and `Random.andThen`
 
-              1. Implement `combine : List (Generator a) -> Generator (List a)`
+              1. Implement `mapN : List (Generator a) -> Generator (List a)`
               """
             ]
         ]

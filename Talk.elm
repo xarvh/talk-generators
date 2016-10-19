@@ -265,9 +265,11 @@ main =
                 (Random.map int2topping) : Generator Int -> Generator Topping
                 ```
               """
+                  {-
             , """
               ➡ `map` does NOT change the container!
               """
+                  -}
             ]
 
         , mdFragments
@@ -285,6 +287,11 @@ main =
                         0 -> Onion
                         1 -> Mushroom
                         _ -> Sausage
+                ```
+              """
+            , """
+                ```elm
+                (Random.map int2topping) : Generator Int -> Generator Topping
                 ```
               """
             , """
@@ -340,68 +347,48 @@ main =
             [ "Let's implement it!"
             , """
                 ```elm
+                (Random.map3 Pizza) :
+                    Generator Int ->
+                    Generator Topping ->
+                    Generator (Maybe Topping) ->
+                    Generator Pizza
+                ```
+              """
+            , """
+                ```elm
                 pizzaGenerator : Generator Pizza
                 pizzaGenerator =
                     Random.map3 Pizza
                         (Random.int 0 4)
                         toppingGenerator
-                        extraToppingGenerator
+                        (Random.Extra.maybe Random.bool toppingGenerator)
                 ```
               """
-                  {-
             , """
                 ```elm
-                (aRandomPizza, newSeed) =
-                    Random.step pizzaGenerator oldSeed
+                maybe : Generator Bool -> Generator a -> Generator (Maybe a)
                 ```
               """
-                  -}
+            ]
+
+        , mdFragments
+            [ """
+                ```elm
+                pizzaGenerator : Generator Pizza
+                pizzaGenerator =
+                    Random.map3 Pizza
+                        (Random.int 0 4)
+                        toppingGenerator
+                        (Random.Extra.maybe Random.bool toppingGenerator)
+                ```
+              """
             , """
               ➡ Very clear, very readable
               """
             , """
               ➡ No messing with seeds
               """
-            , """
-              What about `extraToppingGenerator`?
-              """
             ]
-
-
-        , mdFragments
-            [ """
-                ```elm
-                resultOfRandomBool
-                        -> Nothing
-                        -> Just randomTopping
-                ```
-              """
-            , """
-                _Once you know the result of the genertor A, THEN you use generator B_
-              """
-            , """
-                ```elm
-                extraToppingGenerator : Generator (Maybe Topping)
-                extraToppingGenerator =
-                    Random.bool `Random.andThen` \\hasTopping ->
-                        case hasTopping of
-                            False -> Random.Extra.constant Nothing
-                            True -> Random.map Just toppingGenerator
-                ```
-              """
-            , """
-                Unlike `map`, `andThen` can manipulate not only the value, but also the container!
-              """
-            , """
-                Alternative which does exactly the same:
-                ```elm
-                extraToppingGenerator : Generator (Maybe Topping)
-                extraToppingGenerator =
-                    Random.Extra.maybe Random.bool toppingGenerator
-                ```
-              """
-            ]
-
 
         , mdFragments
             [ """
@@ -414,18 +401,18 @@ main =
                         Pizza
                         (Random.int 0 4)
                         toppingGenerator
-                        extraToppingGenerator
+                        (Random.Extra.maybe Random.bool toppingGenerator)
                 ```
 
                 ```elm
                 pizzaJsonDecoder : Json.Decode.Decoder Pizza
                 pizzaJsonDecoder =
-                    Json.Decode.object3
-                        Pizza
+                    Json.Decode.object3 Pizza
                         ("cheeseCount" := Json.Decode.int)
                         ("mainTopping" := toppingDecoder)
                         (Json.Decode.maybe ("extraTopping" := toppingDecoder))
                 ```
+                (`Json.Decode.object3` will be renamed to `map3` in Elm 0.18)
               """
             ]
 
@@ -437,12 +424,14 @@ main =
               https://github.com/xarvh/talk-generators
               """
             , """
-              Challenge
-              ---------
+              Challenges
+              ----------
 
-              1. Implement `map2` and `map3` using only `Random.map` and `Random.andThen`
+              1. Implement a generator that produces a list of N pizzas
 
-              1. Implement `mapN : List (Generator a) -> Generator (List a)`
+              2. Implement `map2` using only `Random.map` and `Random.andThen`
+
+              3. Implement a random weather forecast generator
               """
             ]
         ]

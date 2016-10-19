@@ -291,6 +291,11 @@ main =
               """
             , """
                 ```elm
+                (Random.map int2topping) : Generator Int -> Generator Topping
+                ```
+              """
+            , """
+                ```elm
                 toppingGenerator : Generator Topping
                 toppingGenerator =
                     Random.map int2topping
@@ -340,6 +345,15 @@ main =
 
         , mdFragments
             [ "Let's implement it!"
+            , """
+                ```elm
+                (Random.map3 Pizza) :
+                    Generator Int ->
+                    Generator Topping ->
+                    Generator (Maybe Topping) ->
+                    Generator Pizza
+                ```
+              """
             , """
                 ```elm
                 pizzaGenerator : Generator Pizza

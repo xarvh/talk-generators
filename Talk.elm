@@ -265,9 +265,11 @@ main =
                 (Random.map int2topping) : Generator Int -> Generator Topping
                 ```
               """
+                  {-
             , """
               ➡ `map` does NOT change the container!
               """
+                  -}
             ]
 
         , mdFragments
@@ -345,63 +347,21 @@ main =
                     Random.map3 Pizza
                         (Random.int 0 4)
                         toppingGenerator
-                        extraToppingGenerator
+                        (Random.Extra.maybe Random.bool toppingGenerator)
                 ```
               """
-                  {-
             , """
                 ```elm
-                (aRandomPizza, newSeed) =
-                    Random.step pizzaGenerator oldSeed
+                maybe : Generator Bool -> Generator a -> Generator (Maybe a)
                 ```
               """
-                  -}
             , """
               ➡ Very clear, very readable
               """
             , """
               ➡ No messing with seeds
               """
-            , """
-              What about `extraToppingGenerator`?
-              """
             ]
-
-
-        , mdFragments
-            [ """
-                ```elm
-                resultOfRandomBool
-                        -> Nothing
-                        -> Just randomTopping
-                ```
-              """
-            , """
-                _Once you know the result of the genertor A, THEN you use generator B_
-              """
-            , """
-                ```elm
-                extraToppingGenerator : Generator (Maybe Topping)
-                extraToppingGenerator =
-                    Random.bool `Random.andThen` \\hasTopping ->
-                        case hasTopping of
-                            False -> Random.Extra.constant Nothing
-                            True -> Random.map Just toppingGenerator
-                ```
-              """
-            , """
-                Unlike `map`, `andThen` can manipulate not only the value, but also the container!
-              """
-            , """
-                Alternative which does exactly the same:
-                ```elm
-                extraToppingGenerator : Generator (Maybe Topping)
-                extraToppingGenerator =
-                    Random.Extra.maybe Random.bool toppingGenerator
-                ```
-              """
-            ]
-
 
         , mdFragments
             [ """
@@ -414,7 +374,7 @@ main =
                         Pizza
                         (Random.int 0 4)
                         toppingGenerator
-                        extraToppingGenerator
+                        (Random.Extra.maybe Random.bool toppingGenerator)
                 ```
 
                 ```elm
@@ -440,9 +400,7 @@ main =
               Challenge
               ---------
 
-              1. Implement `map2` and `map3` using only `Random.map` and `Random.andThen`
-
-              1. Implement `mapN : List (Generator a) -> Generator (List a)`
+              TODO: ....
               """
             ]
         ]

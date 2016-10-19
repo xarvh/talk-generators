@@ -205,13 +205,16 @@ main =
                         (seed4, hasExtraTopping) =
                             Random.step Random.bool seed3
 
+                        mainTopping =
+                            int2topping mainToppingIndex
+
                         extraTopping =
                             if hasExtraTopping
                             then Just (int2topping extraToppingIndex)
                             else Nothing
 
                         randomPizza =
-                            Pizza cheeseCount (int2topping mainToppingIndex) extraTopping
+                            Pizza cheeseCount mainTopping extraTopping
                     in
                         (randomPizza, seed3)
                 ```
@@ -262,6 +265,9 @@ main =
                 (Random.map int2topping) : Generator Int -> Generator Topping
                 ```
               """
+            , """
+              ➡ `map` does NOT change the container!
+              """
             ]
 
         , mdFragments
@@ -285,8 +291,7 @@ main =
                 ```elm
                 toppingGenerator : Generator Topping
                 toppingGenerator =
-                    Random.map
-                        int2topping
+                    Random.map int2topping
                         (Random.int 0 2)
                 ```
               """
@@ -337,13 +342,20 @@ main =
                 ```elm
                 pizzaGenerator : Generator Pizza
                 pizzaGenerator =
-                    Random.map3
-                        Pizza
+                    Random.map3 Pizza
                         (Random.int 0 4)
                         toppingGenerator
                         extraToppingGenerator
                 ```
               """
+                  {-
+            , """
+                ```elm
+                (aRandomPizza, newSeed) =
+                    Random.step pizzaGenerator oldSeed
+                ```
+              """
+                  -}
             , """
               ➡ Very clear, very readable
               """
@@ -365,6 +377,9 @@ main =
                 ```
               """
             , """
+                _Once you know the result of the genertor A, THEN you use generator B_
+              """
+            , """
                 ```elm
                 extraToppingGenerator : Generator (Maybe Topping)
                 extraToppingGenerator =
@@ -375,10 +390,15 @@ main =
                 ```
               """
             , """
-                _Once you know the result of the genertor A, THEN you use generator B_
+                Unlike `map`, `andThen` can manipulate not only the value, but also the container!
               """
             , """
-                Unlike `map`, `andThen` can manipulate not only the value, but also the container!
+                Alternative which does exactly the same:
+                ```elm
+                extraToppingGenerator : Generator (Maybe Topping)
+                extraToppingGenerator =
+                    Random.Extra.maybe Random.bool toppingGenerator
+                ```
               """
             ]
 

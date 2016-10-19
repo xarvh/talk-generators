@@ -407,12 +407,12 @@ main =
                 ```elm
                 pizzaJsonDecoder : Json.Decode.Decoder Pizza
                 pizzaJsonDecoder =
-                    Json.Decode.object3
-                        Pizza
+                    Json.Decode.object3 Pizza
                         ("cheeseCount" := Json.Decode.int)
                         ("mainTopping" := toppingDecoder)
                         (Json.Decode.maybe ("extraTopping" := toppingDecoder))
                 ```
+                (`Json.Decode.object3` will be renamed to `map3` in Elm 0.18)
               """
             ]
 
@@ -429,7 +429,7 @@ main =
 
               1. Implement a generator that produces a list of N pizzas
 
-              2. Implement `map7`
+              2. Implement `map2` using only `Random.map` and `Random.andThen`
 
               3. Implement a random weather forecast generator
               """

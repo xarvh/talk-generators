@@ -369,6 +369,19 @@ main =
                 maybe : Generator Bool -> Generator a -> Generator (Maybe a)
                 ```
               """
+            ]
+
+        , mdFragments
+            [ """
+                ```elm
+                pizzaGenerator : Generator Pizza
+                pizzaGenerator =
+                    Random.map3 Pizza
+                        (Random.int 0 4)
+                        toppingGenerator
+                        (Random.Extra.maybe Random.bool toppingGenerator)
+                ```
+              """
             , """
               ➡ Very clear, very readable
               """
@@ -411,10 +424,14 @@ main =
               https://github.com/xarvh/talk-generators
               """
             , """
-              Challenge
-              ---------
+              Challenges
+              ----------
 
-              TODO: ....
+              1. Implement a generator that produces a list of N pizzas
+
+              2. Implement `map7`
+
+              3. Implement a random weather forecast generator
               """
             ]
         ]

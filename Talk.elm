@@ -237,39 +237,62 @@ main =
             # A different way of thinking
             """
 
-        , md
-            """
-            ![function f](images/f.png)
-
-            ```elm
-            toFloat : Int -> Float
-
-            int2topping : Int -> Topping
-            ```
-            """
-
         , mdFragments
             [ """
-                ![map f](images/mapf.png)
-
+                ```elm
+                List.map : (a -> b) -> List a -> List b
+                ```
+              """
+            , """
+                ```elm
+                List.map : (a -> b) -> (List a -> List b)
+                ```
+              """
+            , "`map` is transforming a function into another function!"
+            ]
+        , mdFragments
+            [ """
+                What happens if we apply `map` to `toFloat`?
+                ```elm
+                toFloat : Int -> Float
+                ```
+              """
+            , """
                 ```elm
                 (List.map toFloat) : List Int -> List Float
-
+                ```
+              """
+            , """
+                We can use it with other "containers":
+                ```elm
                 (Maybe.map toFloat) : Maybe Int -> Maybe Float
                 ```
               """
+            ]
+
+        , mdFragments
+            [ """
+                ![function f](images/f.png)
+
+                ![map f](images/mapf.png)
+              """
+            ]
+
+        , mdFragments
+            [ """
+                ```elm
+                int2topping : Int -> Topping
+
+                (List.map int2topping) : List Int -> List Topping
+
+                (Maybe.map int2topping) : Maybe Int -> Maybe Topping
+                ```
+              """
             , """
                 ```elm
-                (Random.map toFloat) : Generator Int -> Generator Float
-
                 (Random.map int2topping) : Generator Int -> Generator Topping
                 ```
               """
-                  {-
-            , """
-              ➡ `map` does NOT change the container!
-              """
-                  -}
             ]
 
         , mdFragments

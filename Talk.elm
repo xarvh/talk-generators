@@ -145,14 +145,14 @@ main =
               """
 
             , """
-              ```elm
-              Html.App.programWithFlags
+              ```javascript
+              Elm.Main.fullscreen(Date.now())
               ```
               """
 
             , """
-              ```javascript
-              Elm.Main.fullscreen(Date.now())
+              ```elm
+              Html.App.programWithFlags
               ```
               """
 

@@ -49,7 +49,7 @@ This is exactly what we wanted to avoid by not using `Random.generate`, so we ne
 one that does not require any dedicated message and `update` calls.
 
 By using `Html.App.programWithFlags` instead of just `Html.App.program` we can send stuff from
-out JavaScript init code to our Elm init code; in our case, we'll send the return value of
+our JavaScript init code to our Elm init code; in our case, we'll send the return value of
 JavaScript's `Date.now()`:
 ```js
 Elm.Main.fullscreen(Date.now());
@@ -110,6 +110,7 @@ int2topping index =
 
 My first attempt at creating a similar generator looked something like this:
 ```elm
+generatePizza : Random.Seed -> ( Pizza, Random.Seed )
 generatePizza seed0 =
     let
         (seed1, cheeseCount) =
@@ -293,15 +294,37 @@ The first argument is a generator used to decide whether we want `Just` somethin
 The second argument is the generator to use when the first one produces `True`, ie we need a
 value for the `Just` case: we have this too, and it's our `toppingGenerator`.
 
-Voila', we are ready to generate as much pizza as we want!
 
-Our new shiny pizza generator is a lot more readable than my first attempt, and *so much* more
-difficult to accidentelly screw up.
+## Wrapping up
+
+Let's rewrite the `generatePizza` function using our generators:
+```elm
+toppingGenerator : Generator Topping
+toppingGenerator =
+    Random.map int2topping
+        (Random.int 0 2)
+
+pizzaGenerator : Generator Pizza
+pizzaGenerator =
+    Random.map3 Pizza
+        (Random.int 0 4)
+        toppingGenerator
+        (Random.Extra.maybe Random.bool toppingGenerator)
+
+generatePizza : Seed -> ( Pizza, Seed )
+generatePizza seed =
+    Random.step pizzaGenerator seed
+```
+The code now has only one call to `Random.step` and no seed shenanigans: our
+new shiny pizza generator is a lot more readable than my first attempt,
+easier to modify, and a lot more difficult to accidentelly screw up.
 
 
-## Composition is general
 
-This way of composing functions is very general: let's compare the pizza generator with a pizza JSON decoder:
+
+# Composition is general
+
+Let's compare the pizza generator with a pizza JSON decoder:
 
 ```elm
 pizzaGenerator : Generator Pizza
@@ -322,5 +345,6 @@ pizzaJsonDecoder =
 ```
 
 All the reasoning that we used to get to our pizza generator applies *as it is* to many other instances
-where we use funciton composition: random generators, parsers, encoders, decoders and so on.
+where we use funciton composition: random generators, parsers, encoders, decoders and so on, it is a very
+general pattern.
 

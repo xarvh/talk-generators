@@ -1,4 +1,4 @@
-module Main exposing (..)
+module Talk exposing (..)
 
 import Slides exposing (..)
 import Slides.SlideAnimation as SA
@@ -7,60 +7,21 @@ import Css exposing (..)
 import Css.Elements exposing (..)
 
 
-blur completion =
-    "blur(" ++ (toString <| round <| (1 - completion) * 10) ++ "px)"
-
-
-verticalDeck : SA.Animator
-verticalDeck status =
-    Css.asPairs <|
-        case status of
-            SA.Still ->
-                [ Css.position Css.absolute
-                ]
-
-            SA.Moving direction order completion ->
-                case order of
-                    SA.LaterSlide ->
-                        [ Css.position Css.absolute
-                        , Css.property "z-index" "1"
-                        , Css.property "filter" (blur completion)
-                        , Css.property "-webkit-filter" (blur completion)
-                        ]
-
-                    SA.EarlierSlide ->
-                        [ Css.position Css.absolute
-                        , Css.transform <| Css.translate2 zero (pct (completion * 100))
-                        , Css.property "z-index" "2"
-                        ]
-
-
-
-betterFade : FA.Animator
-betterFade completion =
-    Css.asPairs
-        [ Css.opacity (Css.num completion)
-        , Css.property "filter" (blur completion)
-        , Css.property "-webkit-filter" (blur completion)
-        ]
-
-
-
-
-
-
-
 font =
     px 20
+
 
 bgColor =
     rgb 255 255 255
 
+
 codeBgColor =
     rgb 230 230 230
 
+
 txtColor =
     hex "60B5CC"
+
 
 elmBlueOnWhite : List Css.Snippet
 elmBlueOnWhite =
@@ -72,11 +33,9 @@ elmBlueOnWhite =
         , color txtColor
         , fontFamilies [ "calibri", "sans-serif" ]
         , fontSize font
-        , fontWeight (num 400)
         ]
     , h1
-        [ fontWeight (num 400)
-        , fontSize (px 38)
+        [ fontSize (px 38)
         ]
     , section
         [ height (px 700)
@@ -88,7 +47,7 @@ elmBlueOnWhite =
         , property "justify-content" "center"
         , alignItems center
         ]
-    , (.) "slide-content"
+    , class "slide-content"
         [ margin2 zero (px 90)
         ]
     , code
@@ -96,7 +55,7 @@ elmBlueOnWhite =
         , fontSize font
         , backgroundColor codeBgColor
         ]
-    , pre
+    , Css.Elements.pre
         [ padding (px 20)
         , fontSize font
         , backgroundColor codeBgColor
@@ -111,13 +70,12 @@ main =
     Slides.app
         { slidesDefaultOptions
             | style = elmBlueOnWhite
-            , slideAnimator = verticalDeck
-            , fragmentAnimator = betterFade
---             , animationDuration = 3000
         }
         [ md
-            "# Using (random) generators"
-
+            """
+            # Composing a pizza:
+            ### Decoders ang generators in Elm
+            """
         , mdFragments
             [ """
               A generator is something that (duh!) generates values:
@@ -143,19 +101,16 @@ main =
             [ """
               Problem 1: how do we get an initial seed as soon as we start?
               """
-
             , """
               ```javascript
               Elm.Main.fullscreen(Date.now())
               ```
               """
-
             , """
               ```elm
               Html.App.programWithFlags
               ```
               """
-
             , """
                 ```elm
                 init : Int -> ( Model, Cmd Msg )
@@ -167,13 +122,10 @@ main =
               """
             , "(This will probably change slightly in Elm 0.18)"
             ]
-
-
         , mdFragments
             [ """
               Problem 2: how do I generate complex stuff?
               """
-
             , """
                 ```elm
                 type Topping =
@@ -187,7 +139,6 @@ main =
                 ```
               """
             ]
-
         , md
             """
                 ```elm
@@ -219,24 +170,20 @@ main =
                         (randomPizza, seed3)
                 ```
               """
-
         , mdFragments
             [ " * I made a mistake, did you see it?"
             , " * Lugging around the `seedX` value is a pain!"
             , " * It is cluttered and difficult to read!"
             , " * I generate `extraToppingIndex` even when I don't use it"
             ]
-
         , mdFragments
             [ "Coming from imperative languages, we are used to compose *values*."
             , "➡ But in a functional language, we compose *functions*."
             ]
-
         , md
             """
             # A different way of thinking
             """
-
         , mdFragments
             [ """
                 ```elm
@@ -269,7 +216,6 @@ main =
                 ```
               """
             ]
-
         , mdFragments
             [ """
                 ![function f](images/f.png)
@@ -277,7 +223,6 @@ main =
                 ![map f](images/mapf.png)
               """
             ]
-
         , mdFragments
             [ """
                 ```elm
@@ -294,7 +239,6 @@ main =
                 ```
               """
             ]
-
         , mdFragments
             [ "Let's implement it!"
             , """
@@ -326,19 +270,16 @@ main =
                 ```
               """
             ]
-
         , md
             """
                 What if our function has more than 1 argument?
 
                 ![pizza](images/pizza.png)
             """
-
         , md
             """
             ![map3 Pizza](images/map3pizza.png)
             """
-
         , mdFragments
             [ """
                 ```elm
@@ -365,7 +306,6 @@ main =
                 ```
               """
             ]
-
         , mdFragments
             [ "Let's implement it!"
             , """
@@ -393,7 +333,6 @@ main =
                 ```
               """
             ]
-
         , mdFragments
             [ """
                 ```elm
@@ -412,7 +351,6 @@ main =
               ➡ No messing with seeds
               """
             ]
-
         , mdFragments
             [ """
                 This way of composing functions is very general!
@@ -438,7 +376,6 @@ main =
                 (`Json.Decode.object3` will be renamed to `map3` in Elm 0.18)
               """
             ]
-
         , mdFragments
             [ """
               @xarvh

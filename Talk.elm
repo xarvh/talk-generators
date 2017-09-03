@@ -86,45 +86,12 @@ main =
 
               (aRandomIntegerValue, newSeed) =
                   Random.step generator oldSeed
-
-              cmd =
-                  Random.generate MsgRandomInt generator
               ```
               """
-            , """
-              To keep everything synchronous, I want to use `Random.step`!
-              """
-            ]
-
-        -- TODO: make examples more clear!
-        , mdFragments
-            [ """
-              Problem 1: how do we get an initial seed as soon as we start?
-              """
-            , """
-              ```javascript
-              Elm.Main.fullscreen(Date.now())
-              ```
-              """
-            , """
-              ```elm
-              Html.App.programWithFlags
-              ```
-              """
-            , """
-                ```elm
-                init : Int -> ( Model, Cmd Msg )
-                init dateNow =
-                    let
-                        seed = Random.initialSeed dateNow
-                    ...
-                ```
-              """
-            , "(This will probably change slightly in Elm 0.18)"
             ]
         , mdFragments
             [ """
-              Problem 2: how do I generate complex stuff?
+              Problem: how do I generate complex stuff?
               """
             , """
                 ```elm
@@ -382,16 +349,6 @@ main =
               ------
 
               https://github.com/xarvh/talk-generators
-              """
-            , """
-              Challenges
-              ----------
-
-              1. Implement a generator that produces a list of N pizzas
-
-              2. Implement `map2` using only `Random.map` and `Random.andThen`
-
-              3. Implement a random weather forecast generator
               """
             ]
         ]
